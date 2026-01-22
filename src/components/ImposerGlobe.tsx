@@ -13,6 +13,15 @@ interface ImposerGlobeProps {
     globeStyle?: 'realistic' | 'vector';
 }
 
+// Convert ISO 2 code to Emoji Flag
+const getFlagEmoji = (countryCode: string) => {
+    const codePoints = countryCode
+        .toUpperCase()
+        .split('')
+        .map(char => 127397 + char.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+};
+
 const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
     onGlobeReady,
     windFarms = [],
@@ -63,10 +72,24 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
         return windFarms.map(d => ({
             lat: d.lat,
             lng: d.lng,
-            radius: 1.5, // Increased radius for visibility
-            altitude: d.powerOutputMW / 2000, // Adjusted scale
-            color: '#00ffaa', // Fully opaque Cyan
-            label: `${d.name}: ${d.powerOutputMW}MW`
+            radius: 1.0,
+            altitude: d.powerOutputMW / 2000,
+            color: '#00ffaa',
+            name: d.name,
+            power: d.powerOutputMW,
+            flag: getFlagEmoji(d.countryCode)
+        }));
+    }, [windFarms, showWindFarms]);
+
+    const ringsData = useMemo(() => {
+        if (!showWindFarms) return [];
+        return windFarms.map(d => ({
+            lat: d.lat,
+            lng: d.lng,
+            color: '#00ffaa', // "Highlighted in different colours" - cyan for now, can be random or unique
+            maxRadius: 5 + (d.powerOutputMW / 1000), // Area highlight proportional to power
+            propagationSpeed: 2,
+            repeatPeriod: 1000
         }));
     }, [windFarms, showWindFarms]);
 
@@ -76,9 +99,9 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
             lat: d.lat,
             lng: d.lng,
             text: d.name,
-            color: d.country === 'USA' ? '#ffaa00' : // Orange
-                d.country === 'Germany' ? '#00aaff' : // Blue
-                    d.country === 'Japan' ? '#ff3333' : // Red
+            color: d.country === 'USA' ? '#ffaa00' :
+                d.country === 'Germany' ? '#00aaff' :
+                    d.country === 'Japan' ? '#ff3333' :
                         '#ffffff',
             size: 1.5
         }));
@@ -101,18 +124,44 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
                 atmosphereColor={globeStyle === 'realistic' ? "#3a228a" : "#224466"}
                 atmosphereAltitude={0.15}
 
-                // Vector Mode (Polygons)
+                // Vector Mode (Polygons) with GLOW border
                 polygonsData={globeStyle === 'vector' ? countries.features : []}
-                polygonCapColor={() => 'rgba(20, 30, 40, 0.8)'}
+                polygonCapColor={() => 'rgba(20, 30, 40, 0.9)'} // Darker
                 polygonSideColor={() => 'rgba(10, 20, 30, 0.5)'}
-                polygonStrokeColor={() => '#112233'}
+                polygonStrokeColor={() => '#44ccff'} // Bright Cyan/Blue for "Glow"
                 polygonAltitude={0.005}
 
                 // Wind Farms (Cylinders)
                 cylindersData={cylindersData}
-                cylinderRadius={1.5}
+                cylinderRadius={1.0}
                 cylinderHeight="altitude"
                 cylinderColor="color"
+
+                // HTML Elements for Wind Farms (Flag + Details)
+                htmlElementsData={showWindFarms ? cylindersData : []}
+                htmlElement={d => {
+                    const el = document.createElement('div');
+                    el.className = 'flex flex-col items-center pointer-events-none transform -translate-y-10'; // Offset above cylinder
+                    el.innerHTML = `
+                        <div class="bg-black/80 backdrop-blur border border-green-500 rounded px-2 py-1 flex items-center gap-2 text-xs text-white whitespace-nowrap">
+                            <span class="text-base">${d.flag}</span>
+                            <span class="font-bold">${d.name}</span>
+                            <span class="text-gray-400">|</span>
+                            <span class="text-green-400 font-mono">${d.power}MW</span>
+                        </div>
+                        <div class="w-0.5 h-4 bg-green-500/50"></div>
+                    `;
+                    return el;
+                }}
+                htmlAltitude={d => d.altitude + 0.05}
+
+                // Rings for "Highlight Area"
+                ringsData={ringsData}
+                ringColor="color"
+                ringMaxRadius="maxRadius"
+                ringPropagationSpeed="propagationSpeed"
+                ringRepeatPeriod="repeatPeriod"
+                ringAltitude={0.002}
 
                 // Military Bases (Labels)
                 labelsData={labelsData}
