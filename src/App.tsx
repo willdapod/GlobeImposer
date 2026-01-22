@@ -1,6 +1,7 @@
 import { useState, Suspense, lazy } from 'react';
 // Dynamic import to catch module load errors in Error Boundary
 const ImposerGlobe = lazy(() => import('./components/ImposerGlobe'));
+import PowerStats from './components/PowerStats';
 import { windFarms } from './data/windFarms';
 import { militaryBases } from './data/militaryBases';
 
@@ -20,6 +21,8 @@ function App() {
           globeStyle={globeStyle}
         />
       </Suspense>
+
+      <PowerStats windFarms={windFarms} show={showWindFarms} />
 
       {/* UI Overlay */}
       <div className="absolute top-4 right-4 z-10 bg-black/80 backdrop-blur-md p-4 rounded-lg border border-gray-700 text-white w-64">

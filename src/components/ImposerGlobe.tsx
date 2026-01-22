@@ -15,6 +15,7 @@ interface ImposerGlobeProps {
 
 // Convert ISO 2 code to Emoji Flag
 const getFlagEmoji = (countryCode: string) => {
+    if (!countryCode) return '🏳️';
     const codePoints = countryCode
         .toUpperCase()
         .split('')
@@ -66,30 +67,57 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
         }
     }, [onGlobeReady]);
 
-    // Data processing
-    const cylindersData = useMemo(() => {
+    // Combine Countries + Wind Farm Areas for Polygon Layer
+    const allPolygonsData = useMemo(() => {
+        const feats: any[] = [];
+
+        // 1. Countries (Vector Mode only)
+        if (globeStyle === 'vector') {
+            feats.push(...countries.features.map((f: any) => ({ ...f, type: 'Country' })));
+        }
+
+        // 2. Wind Farm Areas
+        if (showWindFarms) {
+            windFarms.forEach(wf => {
+                if (wf.boundary) {
+                    feats.push({
+                        type: 'WindFarm',
+                        geometry: {
+                            type: 'Polygon',
+                            coordinates: wf.boundary
+                        },
+                        properties: {
+                            name: wf.name
+                        }
+                    });
+                }
+            });
+        }
+
+        return feats;
+    }, [countries, showWindFarms, windFarms, globeStyle]);
+
+    // Connector Lines (Paths Layer)
+    const pathsData = useMemo(() => {
         if (!showWindFarms) return [];
         return windFarms.map(d => ({
-            lat: d.lat,
-            lng: d.lng,
-            radius: 1.0,
-            altitude: d.powerOutputMW / 2000,
-            color: '#00ffaa',
-            name: d.name,
-            power: d.powerOutputMW,
-            flag: getFlagEmoji(d.countryCode)
+            coords: [
+                [d.lat, d.lng, 0.02], // Start at polygon height
+                [d.lat, d.lng, 0.12]   // End at text height
+            ],
+            color: 'rgba(255, 215, 0, 0.8)' // Yellow
         }));
     }, [windFarms, showWindFarms]);
 
-    const ringsData = useMemo(() => {
+    // HTML Labels Data
+    const htmlData = useMemo(() => {
         if (!showWindFarms) return [];
         return windFarms.map(d => ({
-            lat: d.lat,
+            ...d,
+            lat: d.lat, // Explicitly pass lat/lng for Globe to read
             lng: d.lng,
-            color: '#00ffaa', // "Highlighted in different colours" - cyan for now, can be random or unique
-            maxRadius: 5 + (d.powerOutputMW / 1000), // Area highlight proportional to power
-            propagationSpeed: 2,
-            repeatPeriod: 1000
+            altitude: 0.12, // Match path end
+            flagEmoji: getFlagEmoji(d.countryCode)
         }));
     }, [windFarms, showWindFarms]);
 
@@ -124,46 +152,49 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
                 atmosphereColor={globeStyle === 'realistic' ? "#3a228a" : "#224466"}
                 atmosphereAltitude={0.15}
 
-                // Vector Mode (Polygons) with GLOW border
-                polygonsData={globeStyle === 'vector' ? countries.features : []}
-                polygonCapColor={() => 'rgba(20, 30, 40, 0.9)'} // Darker
-                polygonSideColor={() => 'rgba(10, 20, 30, 0.5)'}
-                polygonStrokeColor={() => '#44ccff'} // Bright Cyan/Blue for "Glow"
-                polygonAltitude={0.005}
+                // Unified Polygon Layer
+                polygonsData={allPolygonsData}
+                polygonCapColor={(d: any) => d.type === 'WindFarm' ? 'rgba(255, 215, 0, 0.8)' : 'rgba(20, 30, 40, 0.9)'}
+                polygonSideColor={(d: any) => d.type === 'WindFarm' ? 'rgba(0,0,0,0)' : 'rgba(10, 20, 30, 0.5)'}
+                polygonStrokeColor={(d: any) => d.type === 'WindFarm' ? 'rgba(255, 215, 0, 0.5)' : '#44ccff'}
+                polygonAltitude={(d: any) => d.type === 'WindFarm' ? 0.03 : 0.005}
 
-                // Wind Farms (Cylinders)
-                cylindersData={cylindersData}
-                cylinderRadius={1.0}
-                cylinderHeight="altitude"
-                cylinderColor="color"
+                // Paths for connectors
+                pathsData={pathsData}
+                pathPoints="coords"
+                pathPointLat={p => p[0]}
+                pathPointLng={p => p[1]}
+                pathPointAlt={p => p[2]}
+                pathColor="color"
+                pathStroke={1}
+                pathDashLength={0.5}
 
-                // HTML Elements for Wind Farms (Flag + Details)
-                htmlElementsData={showWindFarms ? cylindersData : []}
-                htmlElement={d => {
+                // HTML Elements
+                htmlElementsData={htmlData}
+                htmlElement={(d: any) => {
                     const el = document.createElement('div');
-                    el.className = 'flex flex-col items-center pointer-events-none transform -translate-y-10'; // Offset above cylinder
+                    el.className = 'pointer-events-none transform -translate-x-1/2 -translate-y-full';
                     el.innerHTML = `
-                        <div class="bg-black/80 backdrop-blur border border-green-500 rounded px-2 py-1 flex items-center gap-2 text-xs text-white whitespace-nowrap">
-                            <span class="text-base">${d.flag}</span>
-                            <span class="font-bold">${d.name}</span>
-                            <span class="text-gray-400">|</span>
-                            <span class="text-green-400 font-mono">${d.power}MW</span>
+                        <div class="flex flex-col items-center">
+                            <div class="bg-black/80 backdrop-blur border border-yellow-500 rounded px-3 py-1 flex items-center gap-2 text-xs text-white whitespace-nowrap shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+                                <span class="text-lg leading-none grayscale opacity-80">${d.flagEmoji}</span>
+                                <span class="font-bold text-yellow-400 font-sans">${(d.name || '').toUpperCase()}</span>
+                                <div class="h-3 w-px bg-gray-700 mx-1"></div>
+                                <span class="text-white font-mono text-xs">${d.powerOutputMW} MW</span>
+                            </div>
                         </div>
-                        <div class="w-0.5 h-4 bg-green-500/50"></div>
                     `;
                     return el;
                 }}
-                htmlAltitude={d => d.altitude + 0.05}
+                htmlLat="lat"
+                htmlLng="lng"
+                htmlAltitude="altitude"
+                htmlTransitionDuration={1000}
 
-                // Rings for "Highlight Area"
-                ringsData={ringsData}
-                ringColor="color"
-                ringMaxRadius="maxRadius"
-                ringPropagationSpeed="propagationSpeed"
-                ringRepeatPeriod="repeatPeriod"
-                ringAltitude={0.002}
+                // Removing cylindersData to avoid lint/runtime errors if prop is strict
+                // Removing ringsData
 
-                // Military Bases (Labels)
+                // Military Bases
                 labelsData={labelsData}
                 labelLat="lat"
                 labelLng="lng"
