@@ -40,7 +40,12 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
 
     // Load GeoJSON for Vector Mode
     useEffect(() => {
-        fetch('/datasets/ne_110m_admin_0_countries.geojson')
+        // Use relative path or base-aware path for deployment
+        const basePath = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL;
+        // Strip trailing slash from base if present to avoid double slash, though usually fine.
+        // Actually simplest is to rely on Vite's public dir behavior.
+        // If Base is /GlobeImposer/, we want /GlobeImposer/datasets/ne...
+        fetch(`${basePath}datasets/ne_110m_admin_0_countries.geojson`)
             .then(res => res.json())
             .then(setCountries)
             .catch(err => console.error("Failed to load country data", err));

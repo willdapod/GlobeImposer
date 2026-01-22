@@ -43,7 +43,7 @@ const PowerStats: React.FC<PowerStatsProps> = ({ windFarms, show }) => {
             </h2>
 
             <div className="space-y-2">
-                {stats.map((stat, i) => (
+                {stats.map((stat) => (
                     <div key={stat.code} className="flex items-center justify-between text-sm">
                         <span className="flex items-center gap-2">
                             <span className="text-base">{stat.flag}</span>
