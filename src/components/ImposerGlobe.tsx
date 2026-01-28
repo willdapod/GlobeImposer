@@ -3,13 +3,16 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import Globe from 'react-globe.gl';
 import type { WindFarm } from '../data/windFarms';
 import type { MilitaryBase } from '../data/militaryBases';
+import type { AnimalHabitat } from '../data/animalHabitats';
 
 interface ImposerGlobeProps {
     onGlobeReady?: () => void;
     windFarms?: WindFarm[];
     militaryBases?: MilitaryBase[];
+    animalHabitats?: AnimalHabitat[];
     showWindFarms?: boolean;
     showMilitaryBases?: boolean;
+    showAnimalHabitats?: boolean;
     globeStyle?: 'realistic' | 'vector';
 }
 
@@ -27,8 +30,10 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
     onGlobeReady,
     windFarms = [],
     militaryBases = [],
+    animalHabitats = [],
     showWindFarms = true,
     showMilitaryBases = true,
+    showAnimalHabitats = true,
     globeStyle = 'vector'
 }) => {
     const globeEl = useRef<any>(undefined);
@@ -72,7 +77,7 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
         }
     }, [onGlobeReady]);
 
-    // Combine Countries + Wind Farm Areas for Polygon Layer
+    // Combine Countries + Wind Farm Areas + Animal Habitats
     const allPolygonsData = useMemo(() => {
         const feats: any[] = [];
 
@@ -99,8 +104,26 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
             });
         }
 
+        // 3. Animal Habitats
+        if (showAnimalHabitats) {
+            animalHabitats.forEach(ah => {
+                feats.push({
+                    type: 'AnimalHabitat',
+                    geometry: {
+                        type: 'Polygon',
+                        coordinates: ah.boundary
+                    },
+                    properties: {
+                        name: ah.name,
+                        animal: ah.animal,
+                        population: ah.population
+                    }
+                });
+            });
+        }
+
         return feats;
-    }, [countries, showWindFarms, windFarms, globeStyle]);
+    }, [countries, showWindFarms, windFarms, showAnimalHabitats, animalHabitats, globeStyle]);
 
     // Connector Lines (Paths Layer)
     const pathsData = useMemo(() => {
@@ -149,20 +172,43 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
 
                 // Style Switching
                 backgroundColor="#000000"
-                globeImageUrl={globeStyle === 'realistic' ? "/textures/earth-night.jpg" : undefined}
-                bumpImageUrl={globeStyle === 'realistic' ? "//unpkg.com/three-globe/example/img/earth-topology.png" : undefined}
-                backgroundImageUrl="/textures/night-sky.png"
+                // FORCE TEXTURE to rule out logic errors
+                globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
+                bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
+                backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
 
                 showAtmosphere={true}
-                atmosphereColor={globeStyle === 'realistic' ? "#3a228a" : "#224466"}
+                atmosphereColor="#3a228a"
                 atmosphereAltitude={0.15}
 
                 // Unified Polygon Layer
                 polygonsData={allPolygonsData}
-                polygonCapColor={(d: any) => d.type === 'WindFarm' ? 'rgba(255, 215, 0, 0.8)' : 'rgba(20, 30, 40, 0.9)'}
-                polygonSideColor={(d: any) => d.type === 'WindFarm' ? 'rgba(0,0,0,0)' : 'rgba(10, 20, 30, 0.5)'}
-                polygonStrokeColor={(d: any) => d.type === 'WindFarm' ? 'rgba(255, 215, 0, 0.5)' : '#44ccff'}
-                polygonAltitude={(d: any) => d.type === 'WindFarm' ? 0.03 : 0.005}
+                polygonCapColor={(d: any) =>
+                    d.type === 'WindFarm' ? 'rgba(255, 215, 0, 0.8)' :
+                        d.type === 'AnimalHabitat' ? 'rgba(50, 200, 50, 0.6)' : // Green for animals
+                            'rgba(20, 30, 40, 0.9)'
+                }
+                polygonSideColor={() => 'rgba(0,0,0,0)'}
+                polygonStrokeColor={(d: any) =>
+                    d.type === 'WindFarm' ? 'rgba(255, 215, 0, 0.5)' :
+                        d.type === 'AnimalHabitat' ? 'rgba(100, 255, 100, 0.8)' :
+                            '#44ccff'
+                }
+                polygonAltitude={(d: any) =>
+                    d.type === 'WindFarm' ? 0.03 :
+                        d.type === 'AnimalHabitat' ? 0.02 :
+                            0.005
+                }
+                polygonLabel={({ properties: d, type }: any) => {
+                    if (type === 'AnimalHabitat') return `
+                        <div class="bg-black/90 p-2 text-white rounded border border-green-500">
+                            <b>${d.animal}</b><br/>
+                            ${d.name}<br/>
+                            <em class="text-xs text-green-300">${d.population}</em>
+                        </div>
+                     `;
+                    return d.name;
+                }}
 
                 // Paths for connectors
                 pathsData={pathsData}
@@ -195,9 +241,6 @@ const ImposerGlobe: React.FC<ImposerGlobeProps> = ({
                 htmlLng="lng"
                 htmlAltitude="altitude"
                 htmlTransitionDuration={1000}
-
-                // Removing cylindersData to avoid lint/runtime errors if prop is strict
-                // Removing ringsData
 
                 // Military Bases
                 labelsData={labelsData}

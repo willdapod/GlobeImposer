@@ -51,16 +51,12 @@ export const windFarms: WindFarm[] = [
     { id: '9', name: 'Hornsea 1', lat: 53.89, lng: 1.88, powerOutputMW: 1218, countryCode: 'GB', boundary: createHexagon(53.89, 1.88, 0.3) },
     { id: '10', name: 'Hornsea 2', lat: 53.95, lng: 1.6, powerOutputMW: 1320, countryCode: 'GB', boundary: createHexagon(53.95, 1.6, 0.3) },
     { id: '11', name: 'Walney Extension', lat: 54.08, lng: -3.5, powerOutputMW: 659, countryCode: 'GB', boundary: createHexagon(54.08, -3.5, 0.2) },
-    // Europe
-    { id: '12', name: 'Fantanele-Cogealac', lat: 44.58, lng: 28.56, powerOutputMW: 600, countryCode: 'RO', boundary: createHexagon(44.58, 28.56, 0.2) },
-    { id: '13', name: 'Gode Wind', lat: 54.05, lng: 7.03, powerOutputMW: 582, countryCode: 'DE', boundary: createHexagon(54.05, 7.03, 0.2) },
-    { id: '14', name: 'Gemini Wind Farm', lat: 54.03, lng: 5.95, powerOutputMW: 600, countryCode: 'NL', boundary: createHexagon(54.03, 5.95, 0.2) },
-    // China
-    { id: '15', name: 'Dabancheng', lat: 43.5, lng: 87.8, powerOutputMW: 500, countryCode: 'CN', boundary: createHexagon(43.5, 87.8, 0.2) },
-    { id: '16', name: 'Huitengxile', lat: 41.0, lng: 112.5, powerOutputMW: 300, countryCode: 'CN', boundary: createHexagon(41.0, 112.5, 0.15) },
-    // Other
-    { id: '17', name: 'Macarthur Wind Farm', lat: -38.05, lng: 142.0, powerOutputMW: 420, countryCode: 'AU', boundary: createHexagon(-38.05, 142.0, 0.2) },
-    { id: '18', name: 'Canoa Quebrada', lat: -4.56, lng: -37.78, powerOutputMW: 200, countryCode: 'BR', boundary: createHexagon(-4.56, -37.78, 0.15) },
-    { id: '19', name: 'Tarfaya', lat: 27.9, lng: -12.9, powerOutputMW: 300, countryCode: 'MA', boundary: createHexagon(27.9, -12.9, 0.2) },
-    { id: '20', name: 'Lake Turkana', lat: 2.5, lng: 36.8, powerOutputMW: 310, countryCode: 'KE', boundary: createHexagon(2.5, 36.8, 0.2) },
+    { id: '21', name: 'London Array', lat: 51.6, lng: 1.5, powerOutputMW: 630, countryCode: 'GB', boundary: createHexagon(51.6, 1.5, 0.2) },
+    { id: '22', name: 'Gwynt y Môr', lat: 53.4, lng: -3.6, powerOutputMW: 576, countryCode: 'GB', boundary: createHexagon(53.4, -3.6, 0.2) },
+    { id: '23', name: 'Greater Gabbard', lat: 51.9, lng: 1.9, powerOutputMW: 504, countryCode: 'GB', boundary: createHexagon(51.9, 1.9, 0.2) },
+    { id: '24', name: 'Race Bank', lat: 53.2, lng: 0.8, powerOutputMW: 573, countryCode: 'GB', boundary: createHexagon(53.2, 0.8, 0.2) },
+    { id: '25', name: 'Rampion', lat: 50.7, lng: -0.2, powerOutputMW: 400, countryCode: 'GB', boundary: createHexagon(50.7, -0.2, 0.15) },
+    { id: '26', name: 'West of Duddon Sands', lat: 53.9, lng: -3.4, powerOutputMW: 389, countryCode: 'GB', boundary: createHexagon(53.9, -3.4, 0.15) },
+    { id: '27', name: 'Dogger Bank A (Construction)', lat: 54.8, lng: 1.9, powerOutputMW: 1200, countryCode: 'GB', boundary: createHexagon(54.8, 1.9, 0.3) },
+    { id: '28', name: 'Seagreen', lat: 56.6, lng: -1.7, powerOutputMW: 1075, countryCode: 'GB', boundary: createHexagon(56.6, -1.7, 0.3) },
 ];

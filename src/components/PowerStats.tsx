@@ -37,7 +37,7 @@ const PowerStats: React.FC<PowerStatsProps> = ({ windFarms, show }) => {
     if (!show) return null;
 
     return (
-        <div className="absolute bottom-4 left-4 z-10 bg-black/80 backdrop-blur-md p-4 rounded-lg border border-gray-700 text-white w-64 max-h-96 overflow-y-auto">
+        <div className="absolute bottom-4 left-4 z-50 bg-black/80 backdrop-blur-md p-4 rounded-lg border border-gray-700 text-white w-64 max-h-96 overflow-y-auto shadow-2xl">
             <h2 className="text-lg font-bold mb-3 border-b border-gray-600 pb-2 flex items-center justify-between">
                 <span>Power Output</span>
             </h2>

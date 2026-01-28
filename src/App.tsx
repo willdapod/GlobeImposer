@@ -8,11 +8,12 @@ import { militaryBases } from './data/militaryBases';
 function App() {
   const [showWindFarms, setShowWindFarms] = useState(true);
   const [showMilitaryBases, setShowMilitaryBases] = useState(true);
-  const [globeStyle, setGlobeStyle] = useState<'realistic' | 'vector'>('vector');
+  // Defaulting to 'realistic' to verify if textures load (Vector mode might be black if GeoJSON fails)
+  const [globeStyle, setGlobeStyle] = useState<'realistic' | 'vector'>('realistic');
 
   return (
     <div className="w-full h-full bg-gray-900 relative">
-      <Suspense fallback={<div className="text-white p-20">Loading Globe Library...</div>}>
+      <Suspense fallback={null}>
         <ImposerGlobe
           windFarms={windFarms}
           militaryBases={militaryBases}
