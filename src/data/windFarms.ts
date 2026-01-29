@@ -59,4 +59,31 @@ export const windFarms: WindFarm[] = [
     { id: '26', name: 'West of Duddon Sands', lat: 53.9, lng: -3.4, powerOutputMW: 389, countryCode: 'GB', boundary: createHexagon(53.9, -3.4, 0.15) },
     { id: '27', name: 'Dogger Bank A (Construction)', lat: 54.8, lng: 1.9, powerOutputMW: 1200, countryCode: 'GB', boundary: createHexagon(54.8, 1.9, 0.3) },
     { id: '28', name: 'Seagreen', lat: 56.6, lng: -1.7, powerOutputMW: 1075, countryCode: 'GB', boundary: createHexagon(56.6, -1.7, 0.3) },
+
+    // China - The Giants
+    { id: '29', name: 'Gansu Wind Farm', lat: 40.2, lng: 96.9, powerOutputMW: 10000, countryCode: 'CN', boundary: createHexagon(40.2, 96.9, 1.0) }, // Huge area
+    { id: '30', name: 'Huitengxile', lat: 41.2, lng: 112.5, powerOutputMW: 600, countryCode: 'CN', boundary: createHexagon(41.2, 112.5, 0.3) },
+    { id: '31', name: 'Dabancheng', lat: 43.5, lng: 87.8, powerOutputMW: 500, countryCode: 'CN', boundary: createHexagon(43.5, 87.8, 0.25) },
+    { id: '32', name: 'Shanwei Jieshi (Offshore)', lat: 22.7, lng: 115.8, powerOutputMW: 1000, countryCode: 'CN', boundary: createHexagon(22.7, 115.8, 0.3) }, // Planned/Partial
+
+    // USA - Onshore Giants
+    { id: '33', name: 'Alta Wind Energy Center', lat: 35.0, lng: -118.3, powerOutputMW: 1548, countryCode: 'US', boundary: createHexagon(35.0, -118.3, 0.4) },
+    { id: '34', name: 'Shepherds Flat', lat: 45.6, lng: -120.3, powerOutputMW: 845, countryCode: 'US', boundary: createHexagon(45.6, -120.3, 0.3) },
+    { id: '35', name: 'Roscoe Wind Farm', lat: 32.2, lng: -100.3, powerOutputMW: 781, countryCode: 'US', boundary: createHexagon(32.2, -100.3, 0.3) },
+    { id: '36', name: 'Horse Hollow', lat: 32.2, lng: -100.0, powerOutputMW: 735, countryCode: 'US', boundary: createHexagon(32.2, -100.0, 0.3) },
+    { id: '37', name: 'Capricorn Ridge', lat: 31.9, lng: -100.9, powerOutputMW: 662, countryCode: 'US', boundary: createHexagon(31.9, -100.9, 0.3) },
+    { id: '38', name: 'Fowler Ridge', lat: 40.6, lng: -87.3, powerOutputMW: 750, countryCode: 'US', boundary: createHexagon(40.6, -87.3, 0.3) },
+
+    // India
+    { id: '39', name: 'Bhadla (Wind Park section)', lat: 27.5, lng: 71.9, powerOutputMW: 1500, countryCode: 'IN', boundary: createHexagon(27.5, 71.9, 0.5) },
+    { id: '40', name: 'Muppandal', lat: 8.2, lng: 77.5, powerOutputMW: 1500, countryCode: 'IN', boundary: createHexagon(8.2, 77.5, 0.4) },
+    { id: '41', name: 'Jaisalmer', lat: 26.9, lng: 70.9, powerOutputMW: 1064, countryCode: 'IN', boundary: createHexagon(26.9, 70.9, 0.4) },
+
+    // Europe (More)
+    { id: '42', name: 'Markbygden (Sweden)', lat: 65.5, lng: 20.5, powerOutputMW: 1119, countryCode: 'SE', boundary: createHexagon(65.5, 20.5, 0.6) },
+    { id: '43', name: 'Fântânele-Cogealac (Romania)', lat: 44.5, lng: 28.5, powerOutputMW: 600, countryCode: 'RO', boundary: createHexagon(44.5, 28.5, 0.25) },
+    { id: '44', name: 'Whitelee (Scotland)', lat: 55.6, lng: -4.3, powerOutputMW: 539, countryCode: 'GB', boundary: createHexagon(55.6, -4.3, 0.2) },
+
+    // Other
+    { id: '45', name: 'Gippsland (Offshore, Planned)', lat: -38.5, lng: 148.0, powerOutputMW: 2000, countryCode: 'AU', boundary: createHexagon(-38.5, 148.0, 0.5) }
 ];
