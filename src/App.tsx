@@ -77,6 +77,24 @@ function App() {
           </div>
         </div>
       </div>
+
+      {/* Watermark */}
+      <a
+        href="https://willdapod.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="absolute bottom-4 right-4 z-50 flex items-center gap-3 px-4 py-2 bg-black/30 backdrop-blur-sm rounded-full border border-white/10 hover:bg-black/50 transition-all group no-underline"
+        title="Created by Willdapod"
+      >
+        <img
+          src={`${import.meta.env.BASE_URL}willdapod_logo.png`}
+          alt="Willdapod"
+          className="h-8 w-auto drop-shadow-sm opacity-90 group-hover:opacity-100 transition-opacity"
+        />
+        <span className="text-white/80 font-bold font-sans tracking-wide text-sm group-hover:text-white transition-colors">
+          willdapod
+        </span>
+      </a>
     </div>
   );
 }
